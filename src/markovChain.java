@@ -37,6 +37,8 @@ public class markovChain {
     public static Map<String, List<String>> dictionary (List<String> words) {
         Map<String, List<String>> dictionary = new HashMap<>();
         dictionary.put("*Start*", Collections.singletonList(words.get(0)));
+        dictionary.put("цап", Collections.singletonList("*Finish*"));
+
         for (int i = 0; i < (words.size() - 1); ++i) {
             StringBuilder key = new StringBuilder(words.get(i));
             for (int j = i + 1; j < i; ++j) {
