@@ -9,7 +9,6 @@ public class markovChain {
     public static void main(String[] args) throws IOException {
         String fileName = "/Users/gavelen/Работа/MarkovChain/src/text";
         String text = readFile(fileName);
-        // String[] words = text.split(" ");
 
         System.out.println(text);
 
@@ -23,7 +22,7 @@ public class markovChain {
 
         System.out.println(dictionary(words));
 
-
+        System.out.println(chain(dictionary(words)));
     }
 
     private static String readFile(String fileName) throws IOException {
@@ -56,31 +55,31 @@ public class markovChain {
         return dictionary;
     }
 
+    public static String chain (Map<String, List<String>> dictionary) {
+        Random random = new Random();
+        String firstWord = dictionary.get("*Start*").get(0);
+        String nextWord = null;
+        String lastWord = null;
+        //Set<Map.Entry<String,List<String>>> entrySet = dictionary.entrySet();
+        String generatedText;
+        int generatedTextSize = 25;
+
+        for (int i = 0; i < generatedTextSize; i++){
+            if (firstWord.equals(dictionary.containsKey(firstWord))){
+                nextWord = String.valueOf(dictionary.get(i));
+            }
+        }
+
+        System.out.println(firstWord + " " + nextWord + " " + lastWord);
+
+
+        //generatedText = firstWord +
+
+        return firstWord;
+    }
+
 }
 
 
 
-//        pairs.put("*НАЧАЛО*", Collections.singletonList(words.get(0)));
-//        for (int i = 0; i < words.size() - 1; i++) {
-//
-//            pairs.put(words.get(i),words.get(i + 1));
-//        }
-//
-//        pairs.put(words.get(words.size()-1), Collections.singletonList("*КОНЕЦ*"));
-//
-//        return pairs;
-
-//    public static List<String> pairs (List<String> words) {
-//        List<String> pairs = new ArrayList<>();
-//        pairs.add("НАЧАЛО" + " " + words.get(0));
-//        for (int i = 0; i < words.size() - 1; ++i) {
-//            pairs.add(words.get(i) + " " + words.get(i + 1));
-//
-//        }
-//        pairs.add(words.get(words.size() - 1) + " " + "КОНЕЦ");
-//
-//        return pairs;
-//
-//
-//    }
 
