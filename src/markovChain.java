@@ -18,11 +18,11 @@ public class markovChain {
         }
 
         Map<String, Long> frequency = countWords(words);
-        System.out.println(frequency);
-
+        //System.out.println(frequency);
         System.out.println(dictionary(words));
+        chain(dictionary(words));
 
-        System.out.println(chain(dictionary(words)));
+
     }
 
     private static String readFile(String fileName) throws IOException {
@@ -35,8 +35,8 @@ public class markovChain {
 
     public static Map<String, List<String>> dictionary (List<String> words) {
         Map<String, List<String>> dictionary = new HashMap<>();
-        dictionary.put("*Start*", Collections.singletonList(words.get(0)));
-        dictionary.put("цап", Collections.singletonList("*Finish*"));
+        dictionary.put("*Start*", new ArrayList(Arrays.asList(words.get(0))));
+        dictionary.put(words.get(words.size()-1),new ArrayList( Arrays.asList("*Finish*")));
 
         for (int i = 0; i < (words.size() - 1); ++i) {
             StringBuilder key = new StringBuilder(words.get(i));
@@ -55,28 +55,36 @@ public class markovChain {
         return dictionary;
     }
 
-    public static String chain (Map<String, List<String>> dictionary) {
-        Random random = new Random();
-        String firstWord = dictionary.get("*Start*").get(0);
-        String nextWord = null;
-        String lastWord = null;
-        //Set<Map.Entry<String,List<String>>> entrySet = dictionary.entrySet();
-        String generatedText;
-        int generatedTextSize = 25;
 
-        for (int i = 0; i < generatedTextSize; i++){
-            if (firstWord.equals(dictionary.containsKey(firstWord))){
-                nextWord = String.valueOf(dictionary.get(i));
-            }
-        }
+    public static void chain (Map<String, List<String>> dictionary) {
+        String firstWord = "*Start*";
+        String nextWord = firstWord;
+        String generatedText = "";
 
-        System.out.println(firstWord + " " + nextWord + " " + lastWord);
+        do {
+            nextWord = getNextWord(dictionary, nextWord);
+            if (nextWord.equals("*Finish*"))
+                break;
+            generatedText += nextWord + " ";
+        } while (true);
+        System.out.println(generatedText);
+
+        System.out.println(dictionary);
 
 
-        //generatedText = firstWord +
-
-        return firstWord;
     }
+    public static String getNextWord(Map<String, List<String>> dictionary,String currentWord){
+        Random random = new Random();
+        int i = random.nextInt(dictionary.get(currentWord).size());
+        String result = dictionary.get(currentWord).get(i);
+        deleteWordFromDictionary(dictionary, currentWord, result);
+        return result;
+    }
+    public static void deleteWordFromDictionary (Map<String, List<String>> dictionary, String key, String value){
+        ((ArrayList<String>)dictionary.get(key)).remove(value);
+    }
+
+
 
 }
 
