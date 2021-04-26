@@ -83,18 +83,20 @@ public class markovChain {
 
 
     public static void chain (Map<String, List<String>> dictionary) {
-        String firstWord = "*Start*";
+        Random random = new Random();
+        int a = random.nextInt(dictionary.get(null).size());
+        String firstWord = String.valueOf(dictionary.get(null).get(a));
         String nextWord = firstWord;
         String generatedText = "";
 
         do {
-            nextWord = getNextWord(dictionary, nextWord);
-            if (nextWord.equals("*Finish*")){
+            //nextWord = getNextWord(dictionary, nextWord);
+            if (nextWord == null){
                 //generatedText += ".";
                 break;
             }
-            else
-            {
+            else {
+                //nextWord = getNextWord(dictionary, nextWord);
                 generatedText += nextWord + " ";
             }
         } while (true);
@@ -106,7 +108,14 @@ public class markovChain {
     }
     public static String getNextWord(Map<String, List<String>> dictionary,String currentWord){
         Random random = new Random();
-        int i = random.nextInt(dictionary.get(currentWord).size());
+        if (currentWord == null)
+            System.out.println(currentWord);
+
+        List<String> list = dictionary.get(currentWord);
+        if (list == null)
+            System.out.println("null");
+        int i = random.nextInt(list.size());
+
         String result = dictionary.get(currentWord).get(i);
         deleteWordFromDictionary(dictionary, currentWord, result);
         return result;
