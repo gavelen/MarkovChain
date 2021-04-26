@@ -9,18 +9,25 @@ public class markovChain {
     public static void main(String[] args) throws IOException {
         String fileName = "/Users/gavelen/Работа/MarkovChain/src/text";
         String text = readFile(fileName);
+        String[] sentences = text.split("\\.");
 
         System.out.println(text);
 
-        List<String> words = new ArrayList<>();
-        for (String s : text.split(" ")) {
-            words.add(s.replaceAll("[^a-zA-Zа-яёА-ЯЁ]", "").toLowerCase());
+        Map<String, List<String >> dictionary = new HashMap<>();
+
+        for (int i = 0; i < sentences.length; i++) {
+            List<String> words = new ArrayList<>();
+            for (String s : sentences[i].trim().split(" ")) {
+                words.add(s.replaceAll("[^a-zA-Zа-яёА-ЯЁ]", "").toLowerCase());
+            }
+            createDictionary(dictionary, words);
         }
 
-        Map<String, Long> frequency = countWords(words);
+
+        //Map<String, Long> frequency = countWords(words);
         //System.out.println(frequency);
-        System.out.println(dictionary(words));
-        chain(dictionary(words));
+        System.out.println(dictionary);
+        chain(dictionary);
 
 
     }
@@ -33,10 +40,28 @@ public class markovChain {
         return inputList.stream().collect(Collectors.toMap(Function.identity(), v -> 1L, Long::sum));
     }
 
-    public static Map<String, List<String>> dictionary (List<String> words) {
-        Map<String, List<String>> dictionary = new HashMap<>();
-        dictionary.put("*Start*", new ArrayList(Arrays.asList(words.get(0))));
-        dictionary.put(words.get(words.size()-1),new ArrayList( Arrays.asList("*Finish*")));
+    public static Map<String, List<String>> createDictionary (Map<String, List<String>> dictionary, List<String> words) {
+
+        //dictionary.put("*Start*", new ArrayList(Arrays.asList(words.get(0))));
+        //dictionary.put(words.get(words.size()-1),new ArrayList( Arrays.asList("*Finish*")));
+
+        List<String> valueWordsStart = dictionary.get(null);
+        if (valueWordsStart == null) {
+            valueWordsStart = new ArrayList<>();
+            valueWordsStart.add(words.get(0));
+            dictionary.put(null, valueWordsStart);
+        } else {
+            valueWordsStart.add(words.get(0));
+        }
+
+        List<String> valueWordsFinish = dictionary.get(words.get(words.size()-1));
+        if (valueWordsFinish == null) {
+            valueWordsFinish = new ArrayList<>(1);
+            valueWordsFinish.add(null);
+            dictionary.put(words.get(words.size()-1), valueWordsFinish);
+        } else {
+            valueWordsFinish.add(null);
+        }
 
         for (int i = 0; i < (words.size() - 1); ++i) {
             StringBuilder key = new StringBuilder(words.get(i));
@@ -44,12 +69,13 @@ public class markovChain {
                 key.append(' ').append(words.get(j));
             }
             String value = (i + 1 < words.size()) ? words.get(i + 1) : "";
-            if (!dictionary.containsKey(key.toString())) {
-                ArrayList<String> list = new ArrayList<>();
-                list.add(value);
-                dictionary.put(key.toString(), list);
+            List<String> valueWords = dictionary.get(words.get(i));
+            if (valueWords == null) {
+                valueWords = new ArrayList<>();
+                valueWords.add(value);
+                dictionary.put(key.toString(), valueWords);
             } else {
-                dictionary.get(key.toString()).add(value);
+                valueWords.add(value);
             }
         }
         return dictionary;
@@ -63,13 +89,18 @@ public class markovChain {
 
         do {
             nextWord = getNextWord(dictionary, nextWord);
-            if (nextWord.equals("*Finish*"))
+            if (nextWord.equals("*Finish*")){
+                //generatedText += ".";
                 break;
-            generatedText += nextWord + " ";
+            }
+            else
+            {
+                generatedText += nextWord + " ";
+            }
         } while (true);
         System.out.println(generatedText);
 
-        System.out.println(dictionary);
+        //System.out.println(dictionary);
 
 
     }
