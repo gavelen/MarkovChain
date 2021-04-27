@@ -22,10 +22,6 @@ public class markovChain {
             }
             createDictionary(dictionary, words);
         }
-
-
-        //Map<String, Long> frequency = countWords(words);
-        //System.out.println(frequency);
         System.out.println(dictionary);
         chain(dictionary);
 
@@ -41,9 +37,6 @@ public class markovChain {
     }
 
     public static Map<String, List<String>> createDictionary (Map<String, List<String>> dictionary, List<String> words) {
-
-        //dictionary.put("*Start*", new ArrayList(Arrays.asList(words.get(0))));
-        //dictionary.put(words.get(words.size()-1),new ArrayList( Arrays.asList("*Finish*")));
 
         List<String> valueWordsStart = dictionary.get(null);
         if (valueWordsStart == null) {
@@ -83,23 +76,27 @@ public class markovChain {
 
 
     public static void chain (Map<String, List<String>> dictionary) {
-        Random random = new Random();
-        int a = random.nextInt(dictionary.get(null).size());
-        String firstWord = String.valueOf(dictionary.get(null).get(a));
+        String firstWord = null;
         String nextWord = firstWord;
+        int quantity = 10;
+        int quantityMin = 4;
+
         String generatedText = "";
 
-        do {
-            //nextWord = getNextWord(dictionary, nextWord);
+        for (int i = 0;  i < quantity; i++){
+            nextWord = getNextWord(dictionary, nextWord);
             if (nextWord == null){
-                //generatedText += ".";
-                break;
+                if (i > quantityMin) {
+                    break;
+                }
+            nextWord = getNextWord(dictionary, nextWord);
             }
             else {
-                //nextWord = getNextWord(dictionary, nextWord);
                 generatedText += nextWord + " ";
             }
-        } while (true);
+
+        }
+        generatedText = generatedText.trim() + ".";
         System.out.println(generatedText);
 
         //System.out.println(dictionary);
@@ -108,9 +105,6 @@ public class markovChain {
     }
     public static String getNextWord(Map<String, List<String>> dictionary,String currentWord){
         Random random = new Random();
-        if (currentWord == null)
-            System.out.println(currentWord);
-
         List<String> list = dictionary.get(currentWord);
         if (list == null)
             System.out.println("null");
@@ -120,8 +114,11 @@ public class markovChain {
         deleteWordFromDictionary(dictionary, currentWord, result);
         return result;
     }
+
     public static void deleteWordFromDictionary (Map<String, List<String>> dictionary, String key, String value){
-        ((ArrayList<String>)dictionary.get(key)).remove(value);
+        int i = dictionary.get(key).indexOf(value);
+        if(i < 0) return;
+        dictionary.get(key).remove(i);
     }
 
 
