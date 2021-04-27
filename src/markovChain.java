@@ -83,24 +83,40 @@ public class markovChain {
 
         String generatedText = "";
 
-        for (int i = 0;  i < quantity; i++){
+        for (int i = 0; i <= quantity; i++) {
             nextWord = getNextWord(dictionary, nextWord);
-            if (nextWord == null){
+
+            if (i == quantity) {
+                if (nextWord != null) {
+                    String key = null;
+                    for (Map.Entry<String, List<String>> keyValue : dictionary.entrySet()) {
+                        for (String word : keyValue.getValue()) {
+                            if (word == null) {
+                                key = keyValue.getKey();
+                                break;
+                            }
+                        }
+                        if (key != null) {
+                            nextWord = key;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (nextWord == null) {
                 if (i > quantityMin) {
                     break;
                 }
-            nextWord = getNextWord(dictionary, nextWord);
+                nextWord = getNextWord(dictionary, nextWord);
             }
-            else {
-                generatedText += nextWord + " ";
-            }
+            else{
+                    generatedText += nextWord + " ";
+                }
 
         }
         generatedText = generatedText.trim() + ".";
         System.out.println(generatedText);
-
-        //System.out.println(dictionary);
-
 
     }
     public static String getNextWord(Map<String, List<String>> dictionary,String currentWord){
