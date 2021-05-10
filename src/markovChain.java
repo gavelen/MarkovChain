@@ -6,6 +6,26 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class markovChain {
+   static ArrayList<String> prepositions = new ArrayList<>();
+
+static {
+    prepositions.add("в");
+    prepositions.add("к");
+    prepositions.add("на");
+    prepositions.add("с");
+    prepositions.add("от");
+    prepositions.add("над");
+    prepositions.add("под");
+    prepositions.add("по");
+    prepositions.add("до");
+    prepositions.add("из");
+    prepositions.add("без");
+    prepositions.add("у");
+    prepositions.add("для");
+    prepositions.add("о");
+    prepositions.add("около");
+    prepositions.add("за");
+}
     public static void main(String[] args) throws IOException {
         String fileName = "/Users/gavelen/Работа/MarkovChain/src/text";
         String text = readFile(fileName);
@@ -62,6 +82,10 @@ public class markovChain {
                 key.append(' ').append(words.get(j));
             }
             String value = (i + 1 < words.size()) ? words.get(i + 1) : "";
+            if (prepositions.contains(value)){
+                value =  value + " " + ((i + 2 < words.size()) ? words.get(i + 2) : "");
+                i++;
+            }
             List<String> valueWords = dictionary.get(words.get(i));
             if (valueWords == null) {
                 valueWords = new ArrayList<>();
@@ -78,55 +102,76 @@ public class markovChain {
     public static void chain (Map<String, List<String>> dictionary) {
         String firstWord = null;
         String nextWord = firstWord;
-        int quantity = 10;
-        int quantityMin = 4;
+        //int quantity = 10;
+        int currentQuantity = 0;
+        int quantityMin = 6;
 
         String generatedText = "";
+        do{
+            currentQuantity ++;
+            nextWord = getNextWord(dictionary, nextWord, currentQuantity < quantityMin);
+            if(nextWord == null)
+                break;
+            else
+                generatedText+=nextWord + " ";
+        }while(true);
 
-        for (int i = 0; i <= quantity; i++) {
-            nextWord = getNextWord(dictionary, nextWord);
-
-            if (i == quantity) {
-                if (nextWord != null) {
-                    String key = null;
-                    for (Map.Entry<String, List<String>> keyValue : dictionary.entrySet()) {
-                        for (String word : keyValue.getValue()) {
-                            if (word == null) {
-                                key = keyValue.getKey();
-                                break;
-                            }
-                        }
-                        if (key != null) {
-                            nextWord = key;
-                            break;
-                        }
-                    }
-                }
-            }
-
-            if (nextWord == null) {
-                if (i > quantityMin) {
-                    break;
-                }
-                nextWord = getNextWord(dictionary, nextWord);
-            }
-            else{
-                    generatedText += nextWord + " ";
-                }
-
-        }
+//        for (int i = 0; i <= quantity; i++) {
+//            nextWord = getNextWord(dictionary, nextWord);
+//
+//            if (i == quantity) {
+//                if (nextWord != null) {
+//                    String key = null;
+//                    for (Map.Entry<String, List<String>> keyValue : dictionary.entrySet()) {
+//                        for (String word : keyValue.getValue()) {
+//                            if (word == null) {
+//                                key = keyValue.getKey();
+//                                break;
+//                            }
+//                        }
+//                        if (key != null) {
+//                            nextWord = key;
+//                            break;
+//                        }
+//                    }
+//                }
+//            }
+//
+//            if (nextWord == null) {
+//                if (i > quantityMin) {
+//                    break;
+//                }
+//                nextWord = getNextWord(dictionary, nextWord);
+//            }
+//            else{
+//                    generatedText += nextWord + " ";
+//                }
+//
+//        }
         generatedText = generatedText.trim() + ".";
         System.out.println(generatedText);
 
     }
-    public static String getNextWord(Map<String, List<String>> dictionary,String currentWord){
+    public static String getNextWord(Map<String, List<String>> dictionary,String currentWord, boolean isNeedEnd){
         Random random = new Random();
         List<String> list = dictionary.get(currentWord);
+
+        if (isNeedEnd) {
+            for(String s : list) {
+                if (s == null) {
+                    deleteWordFromDictionary(dictionary, currentWord, null);
+                    return null;
+                }
+            }
+        }
         if (list == null)
             System.out.println("null");
         int i = random.nextInt(list.size());
 
         String result = dictionary.get(currentWord).get(i);
+
+
+
         deleteWordFromDictionary(dictionary, currentWord, result);
         return result;
     }
@@ -136,6 +181,8 @@ public class markovChain {
         if(i < 0) return;
         dictionary.get(key).remove(i);
     }
+
+
 
 
 
