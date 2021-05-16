@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 
 public class markovChain {
    static ArrayList<String> prepositions = new ArrayList<>();
-   public static List<String> finishWords = new ArrayList<>();
+   //public static List<String> finishWords = new ArrayList<>();
 
 
 static {
@@ -77,7 +77,7 @@ static {
         } else {
             valueWordsFinish.add(null);
         }
-        finishWords.add(words.get(words.size()-1));
+        //finishWords.add(words.get(words.size()-1));
 
         for (int i = 0; i < (words.size() - 1); ++i) {
             StringBuilder key = new StringBuilder(words.get(i));
@@ -109,36 +109,70 @@ static {
         String firstWord = null;
         String nextWord = firstWord;
 
+
         //int quantity = 10;
         int currentQuantity = 0;
         int quantityMin = 6;
 
         String generatedText = "";
-        do{
-            currentQuantity ++;
-            nextWord = getNextWord(dictionary, nextWord, currentQuantity < quantityMin);
-            if(nextWord == null)
-                break;
-            else
-                generatedText+=nextWord + " ";
-        }while(true);
 
-        generatedText = generatedText.trim() + ".";
+        String endOfSentence = "";
+        int lenghtOfEndOfSentence = 0;
+
+        while (true) {
+            if (currentQuantity < quantityMin) {
+                currentQuantity++;
+                nextWord = getNextWord(dictionary, nextWord);
+                if (nextWord == null)
+                    break;
+                else
+                    generatedText += nextWord + " ";
+            }
+            else {
+                List<String> wordsToContinue = dictionary.get(nextWord);
+                for (String s : wordsToContinue) {
+                    nextWord = s;
+                    String generatedSentenceToContinue = "";
+                    int lenghtGeneratedSentenceToContinue = 0;
+                    while (true) {
+                        nextWord = getNextWord(dictionary, nextWord);
+                        if (nextWord == null)
+                            break;
+
+                        generatedSentenceToContinue += nextWord + " ";
+                        lenghtGeneratedSentenceToContinue++;
+                    }
+
+                    if (lenghtOfEndOfSentence == 0 || lenghtOfEndOfSentence > lenghtGeneratedSentenceToContinue) {
+                        lenghtOfEndOfSentence = lenghtGeneratedSentenceToContinue;
+                        endOfSentence = generatedSentenceToContinue;
+                    }
+                }
+                break;
+            }
+        }
+
+
+
+
+        generatedText = generatedText.trim() + " " + endOfSentence.trim() + ".";
         System.out.println(generatedText);
 
     }
-    public static String getNextWord(Map<String, List<String>> dictionary,String currentWord, boolean isNeedContinuation){
+
+
+    public static String getNextWord(Map<String, List<String>> dictionary,String currentWord){
         Random random = new Random();
         List<String> list = dictionary.get(currentWord);
 
-        if (isNeedContinuation) {
+        //if (isNeedContinuation) {
             for(String s : list) {
                 if (s == null) {
                     deleteWordFromDictionary(dictionary, currentWord, null);
                     return null;
                 }
             }
-        }
+       // }
 
         if (list == null)
             System.out.println("null");
@@ -148,10 +182,6 @@ static {
 
         deleteWordFromDictionary(dictionary, currentWord, result);
 
-        if (!isNeedContinuation) {
-             i = random.nextInt(finishWords.size());
-             result = finishWords.get(i);
-         }
 
 
         return result;
